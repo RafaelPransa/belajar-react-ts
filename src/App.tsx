@@ -1,13 +1,5 @@
 import './App.css'
-
-interface ProjectItem {
-  id: string;
-  title: string;
-  description: string;
-  techStack: string[];
-  isFeatured: boolean;
-  status: "completed" | "planned";
-}
+import { ProjectCards, type ProjectItem } from './components/ProjectCard';
 
 const projects: ProjectItem[] = [
   {
@@ -37,72 +29,56 @@ const projects: ProjectItem[] = [
 ];
 
 function App() {
+  const completedCount = projects.filter((p) => p.status === "completed").length;
+  const plannedCount = projects.filter((p) => p.status === "planned").length;
+
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-12">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-indigo-400">
-            Daftar Project
+    <main className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200 px-6 py-12 md:py-16">
+      {/* Ambient background glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-b from-indigo-600/10 via-purple-600/5 to-transparent blur-3xl pointer-events-none rounded-full" />
+
+      <div className="relative max-w-4xl mx-auto">
+        {/* Header Section */}
+        <header className="mb-10 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-xs font-medium mb-4 shadow-xs backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+            Showcase Projek & Eksplorasi
+          </div>
+
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+            Daftar Projek
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Kumpulan proyek pengembangan perangkat lunak dan eksplorasi teknologi.
+          <p className="text-slate-400 text-sm md:text-base mt-2 max-w-xl leading-relaxed">
+            Katalog komponen modular yang dibangun menggunakan React, TypeScript, dan Tailwind CSS.
           </p>
+
+          {/* Quick Stats Bar */}
+          <div className="flex items-center gap-3 mt-6 pt-6 border-t border-slate-800/60 text-xs text-slate-400">
+            <span className="inline-flex items-center gap-1.5 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
+              <strong className="text-slate-100 font-semibold">{projects.length}</strong> Total Projek
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <strong className="text-slate-100 font-semibold">{completedCount}</strong> Selesai
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+              <strong className="text-slate-100 font-semibold">{plannedCount}</strong> Direncanakan
+            </span>
+          </div>
         </header>
 
+        {/* Grid List Komponen: Mapping dan mengirim props ke ProjectCards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <article
-              key={project.id}
-              className="p-5 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between hover:border-slate-700 transition-colors"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <h2 className="font-semibold text-lg text-slate-200 leading-snug">
-                    {project.title}
-                  </h2>
-                  {/* Logical AND: Hanya muncul jika featured */}
-                  {project.isFeatured && (
-                    <span className="shrink-0 text-xs bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded-full font-medium">
-                      ⭐ Featured
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-              </div>
-
-              <div>
-                <ul className="flex flex-wrap gap-1.5 mb-4 list-none p-0">
-                  {project.techStack.map((tech) => (
-                    <li
-                      key={tech}
-                      className="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-md border border-slate-700/50"
-                    >
-                      {tech}
-                    </li>
-                  ))}
-                </ul>
-
-
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 font-mono">ID: {project.id}</span>
-
-                  {/* Ternary: Menyesuaikan style status */}
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full font-medium ${project.status === "completed"
-                      ? "bg-emerald-950 text-emerald-400 border border-emerald-800/60"
-                      : "bg-sky-950 text-sky-400 border border-sky-800/60"
-                      }`}
-                  >
-                    {project.status === "completed" ? "Selesai" : "Direncanakan"}
-                  </span>
-                </div>
-              </div>
-            </article>
+          {projects.map((item) => (
+            <ProjectCards key={item.id} project={item} />
           ))}
         </div>
+
+        {/* Footer */}
+        <footer className="mt-16 pt-8 border-t border-slate-800/60 text-center text-xs text-slate-500">
+          Belajar React & TypeScript • Komponen Modular & Props
+        </footer>
       </div>
     </main>
   );
