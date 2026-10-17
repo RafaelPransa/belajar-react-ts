@@ -49,7 +49,8 @@ export function ProjectCards({ project }: ProjectCardProps) {
                     {project.techStack.map((tech) => {
                         const isHighLight =
                             tech.toLowerCase().includes("react") ||
-                            tech.toLowerCase().includes("typescript");
+                            tech.toLowerCase().includes("typescript") ||
+                            tech.toLowerCase().includes("tailwind css");
 
                         return (
                             <TechBadge key={tech} label={tech} isHighLighted={isHighLight} />
@@ -64,16 +65,14 @@ export function ProjectCards({ project }: ProjectCardProps) {
                     </span>
 
                     <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-medium border ${
-                            isCompleted
-                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                : "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                        }`}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-medium border ${isCompleted
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                            }`}
                     >
                         <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                                isCompleted ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
-                            }`}
+                            className={`w-1.5 h-1.5 rounded-full ${isCompleted ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
+                                }`}
                         />
                         {isCompleted ? "Selesai" : "Direncanakan"}
                     </span>
@@ -81,4 +80,4 @@ export function ProjectCards({ project }: ProjectCardProps) {
             </div>
         </article>
     );
-}
+}
