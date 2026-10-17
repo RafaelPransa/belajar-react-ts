@@ -1,7 +1,9 @@
-import './App.css'
-import { ProjectCards, type ProjectItem } from './components/ProjectCard';
+import { useState } from "react";
+import "./App.css";
+import { ProjectCards, type ProjectItem } from "./components/ProjectCard";
+import { AddProjectForm } from "./components/AddProjectForm";
 
-const projects: ProjectItem[] = [
+const initialProjects: ProjectItem[] = [
   {
     id: "proj-1",
     title: "Sistem Pemesanan Travel",
@@ -29,12 +31,21 @@ const projects: ProjectItem[] = [
 ];
 
 function App() {
-  const completedCount = projects.filter((p) => p.status === "completed").length;
-  const plannedCount = projects.filter((p) => p.status === "planned").length;
+  // State untuk menyimpan daftar proyek dinamis
+  const [projectList, setProjectList] = useState<ProjectItem[]>(initialProjects);
+
+  // Perhitungan statistik dinamis dari state
+  const completedCount = projectList.filter((p) => p.status === "completed").length;
+  const plannedCount = projectList.filter((p) => p.status === "planned").length;
+
+  // Handler penambah proyek secara immutable
+  const handleAddProject = (newProject: ProjectItem) => {
+    setProjectList((prevProjects) => [newProject, ...prevProjects]);
+  };
 
   return (
     <main className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200 px-6 py-12 md:py-16">
-      {/* Ambient background glow */}
+      {/* Ambient glow background */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-b from-indigo-600/10 via-purple-600/5 to-transparent blur-3xl pointer-events-none rounded-full" />
 
       <div className="relative max-w-4xl mx-auto">
@@ -55,7 +66,7 @@ function App() {
           {/* Quick Stats Bar */}
           <div className="flex items-center gap-3 mt-6 pt-6 border-t border-slate-800/60 text-xs text-slate-400">
             <span className="inline-flex items-center gap-1.5 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
-              <strong className="text-slate-100 font-semibold">{projects.length}</strong> Total Projek
+              <strong className="text-slate-100 font-semibold">{projectList.length}</strong> Total Projek
             </span>
             <span className="inline-flex items-center gap-1.5 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -68,9 +79,12 @@ function App() {
           </div>
         </header>
 
-        {/* Grid List Komponen: Mapping dan mengirim props ke ProjectCards */}
+        {/* Form Tambah Projek (Controlled Component) */}
+        <AddProjectForm onAddProject={handleAddProject} />
+
+        {/* Grid List Komponen */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.map((item) => (
+          {projectList.map((item) => (
             <ProjectCards key={item.id} project={item} />
           ))}
         </div>
