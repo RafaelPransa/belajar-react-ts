@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { ProjectItem } from "./ProjectCard";
 
 interface AddProjectFormProps {
@@ -12,12 +12,19 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     const [isFeatured, setIsFeatured] = useState<boolean>(false);
     const [status, setStatus] = useState<"completed" | "planned">("planned");
 
+    // penggunaan useRef pada title
+    const titleInputRef = useRef<HTMLInputElement | null>(null);
+    useEffect(() => {
+        titleInputRef.current?.focus();
+    }, []);
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Validasi sederhana
         if (!title.trim() || !description.trim()) {
             alert("Judul dan deskripsi wajib diisi!");
+            titleInputRef.current?.focus();
             return;
         }
 
@@ -45,6 +52,8 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
         setTechStackInput("");
         setIsFeatured(false);
         setStatus("planned");
+
+        titleInputRef.current?.focus();
     };
 
     return (
@@ -60,6 +69,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                         Judul Projek
                     </label>
                     <input
+                        ref={titleInputRef}
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}

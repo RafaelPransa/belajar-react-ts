@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { ProjectCards, type ProjectItem } from "./components/ProjectCard";
 import { AddProjectForm } from "./components/AddProjectForm";
@@ -32,7 +32,18 @@ const initialProjects: ProjectItem[] = [
 
 function App() {
   // State untuk menyimpan daftar proyek dinamis
-  const [projectList, setProjectList] = useState<ProjectItem[]>(initialProjects);
+  const [projectList, setProjectList] = useState<ProjectItem[]>(() => {
+    const savedData = localStorage.getItem("portfolio_projects_data");
+    if (savedData) {
+      try {
+        return JSON.parse(savedData) as ProjectItem[];
+      } catch {
+        console.error("Gagal parse data projects dari localStorage");
+        return initialProjects;
+      }
+    }
+    return initialProjects; // kembalikan default jika tidak ada data
+  });
 
   // Perhitungan statistik dinamis dari state
   const completedCount = projectList.filter((p) => p.status === "completed").length;
@@ -42,6 +53,15 @@ function App() {
   const handleAddProject = (newProject: ProjectItem) => {
     setProjectList((prevProjects) => [newProject, ...prevProjects]);
   };
+
+  // useEffect untuk otomatis menyimpan data ke localStorage
+  useEffect(() => {
+    localStorage.setItem("portfolio_projects_data", JSON.stringify(projectList));
+  }, [projectList]); // Wajib masukkan projectList ke dalam dependency array!
+
+  useEffect(() => {
+    document.title = `Daftar project ${projectList.length} - Portofolio`;
+  }, [projectList]); // Wajib masukkan projectList ke dalam dependency array!
 
   return (
     <main className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200 px-6 py-12 md:py-16">
