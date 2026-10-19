@@ -1,6 +1,6 @@
 import { TechBadge } from "../ui/TechBadge";
 import { Button } from "../ui/Button";
-import type { ProjectItem } from "../../types/project";
+import type { ProjectItem } from "../../types";
 
 // 2. KONTRAK PROPS KOMPONEN (TypeScript Interface)
 // Mendefinisikan data dan fungsi callback yang dibutuhkan oleh kartu proyek:

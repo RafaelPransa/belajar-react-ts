@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { getProducts, type Product, getMessageError } from "../../services/productService";
-import { Button } from "../ui/Button"
+import { getProducts, type Product, getMessageError } from "../../services";
+import { Button } from "../ui/Button";
 
 // ============================================================================
 // 1. TEKNIK: GENERIC DISCRIMINATED UNION (ASYNC UI STATE PATTERN)

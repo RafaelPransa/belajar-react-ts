@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import type { ProjectItem } from "../../types/project";
+import type { ProjectItem } from "../../types";
 import { Button } from "../ui/Button";
 
 // 1. KONTRAK PROPS DENGAN CALLBACK FUNCTION (TypeScript Interface)

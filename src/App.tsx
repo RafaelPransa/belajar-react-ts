@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { ProjectCards, type ProjectItem, AddProjectForm, type BannerNotification, NoticeBanner, CatalogExplorer, Button } from "./components";
+import { ProjectCards, AddProjectForm, NoticeBanner, CatalogExplorer, Button } from "./components";
+import type { ProjectItem, BannerNotification } from "./types";
 
 // 1. DATA SEED / DEFAULT DATA (Typed Constant Array)
 // Menggunakan array bertipe `ProjectItem[]` sebagai data awal aplikasi.

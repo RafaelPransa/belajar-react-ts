@@ -1,4 +1,4 @@
-import type { BannerNotification } from "../../types/notification";
+import type { BannerNotification } from "../../types";
 
 // 2. KONTRAK PROPS (TypeScript Interface)
 // Mendefinisikan kontrak komunikasi antara komponen Parent dan Child:
