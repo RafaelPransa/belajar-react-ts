@@ -1,39 +1,58 @@
 import { useState, useRef, useEffect } from "react";
 import type { ProjectItem } from "./ProjectCard";
 
+// 1. KONTRAK PROPS DENGAN CALLBACK FUNCTION (TypeScript Interface)
+// Komponen form menerima callback function `onAddProject` yang bertugas
+// mengirim data proyek baru yang telah divalidasi ke komponen parent (App.tsx).
 interface AddProjectFormProps {
     onAddProject: (newProject: ProjectItem) => void;
 }
 
+// 2. KOMPONEN FUNGSIONAL & PROPS DESTRUCTURING
 export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
+    // 3. CONTROLLED COMPONENT STATE (useState Hook dengan Generic Type Annotations)
+    // React mengontrol nilai setiap input melalui state lokal:
+    // - Primitive types: string, boolean.
+    // - Union Literal Type: "completed" | "planned" untuk status proyek.
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [techStackInput, setTechStackInput] = useState<string>("");
     const [isFeatured, setIsFeatured] = useState<boolean>(false);
     const [status, setStatus] = useState<"completed" | "planned">("planned");
 
-    // penggunaan useRef pada title
+    // 4. DOM REFERENCE HOOK (useRef & Direct DOM Access)
+    // Menyimpan referensi langsung ke elemen DOM `<input>` untuk manipulasi imperatif (fokus kursor)
+    // tanpa memicu re-render komponen.
     const titleInputRef = useRef<HTMLInputElement | null>(null);
+
+    // 5. LIFECYCLE EFFECT ON MOUNT (useEffect dengan Empty Dependency Array `[]`)
+    // Berjalan tepat 1 kali saat komponen pertama kali di-mount ke layar browser.
     useEffect(() => {
         titleInputRef.current?.focus();
     }, []);
 
+    // 6. FORM SUBMISSION HANDLER & EVENT TYPING (React.FormEvent)
+    // Tipe event `React.FormEvent<HTMLFormElement>` menjamin type-safety pada event submit form.
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        // Mencegah perilaku default browser (full-page reload)
         e.preventDefault();
 
-        // Validasi sederhana
+        // Validasi input sederhana
         if (!title.trim() || !description.trim()) {
             alert("Judul dan deskripsi wajib diisi!");
             titleInputRef.current?.focus();
             return;
         }
 
-        // Ubah string "React, Tailwind, Vite" menjadi array ["React", "Tailwind", "Vite"]
+        // 7. DATA TRANSFORMATION / NORMALIZATION
+        // Mengubah string masukan mentah "React, Tailwind, Vite" menjadi array string bersih ["React", "Tailwind", "Vite"]
         const techArray = techStackInput
             .split(",")
             .map((tech) => tech.trim())
             .filter((tech) => tech.length > 0);
 
+        // 8. DATA OBJECT CREATION (Type-Safe Entity)
+        // Membentuk objek proyek baru sesuai kontrak tipe `ProjectItem`
         const newProject: ProjectItem = {
             id: "proj-" + Date.now().toString(),
             title,
@@ -43,16 +62,19 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
             status,
         };
 
-        // Kirim data ke parent (App.tsx)
+        // 9. CHILD-TO-PARENT COMMUNICATION (Lifting State Up via Callback)
+        // Mengirimkan objek proyek baru ke parent (App.tsx)
         onAddProject(newProject);
 
-        // Reset formulir
+        // 10. FORM STATE RESETTING
+        // Mengembalikan seluruh state input ke nilai awal setelah submit berhasil
         setTitle("");
         setDescription("");
         setTechStackInput("");
         setIsFeatured(false);
         setStatus("planned");
 
+        // Mengembalikan fokus kursor ke input judul secara otomatis
         titleInputRef.current?.focus();
     };
 
@@ -68,6 +90,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                     <label className="block text-xs font-medium text-slate-400 mb-1">
                         Judul Projek
                     </label>
+                    {/* 11. CONTROLLED TEXT INPUT DENGAN REF */}
                     <input
                         ref={titleInputRef}
                         type="text"
@@ -82,6 +105,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                     <label className="block text-xs font-medium text-slate-400 mb-1">
                         Tech Stack (Pisahkan dengan koma)
                     </label>
+                    {/* CONTROLLED TEXT INPUT */}
                     <input
                         type="text"
                         value={techStackInput}
@@ -96,6 +120,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                 <label className="block text-xs font-medium text-slate-400 mb-1">
                     Deskripsi Singkat
                 </label>
+                {/* CONTROLLED TEXTAREA INPUT */}
                 <textarea
                     rows={2}
                     value={description}
@@ -107,6 +132,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
                 <div className="flex items-center gap-6 text-xs text-slate-300">
+                    {/* 12. CONTROLLED CHECKBOX INPUT */}
                     <label className="inline-flex items-center gap-2 cursor-pointer select-none">
                         <input
                             type="checkbox"
@@ -117,6 +143,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                         <span>⭐ Tandai sebagai Featured</span>
                     </label>
 
+                    {/* 13. CONTROLLED SELECT DROPDOWN DENGAN TYPE ASSERTION */}
                     <label className="inline-flex items-center gap-2">
                         <span>Status:</span>
                         <select
@@ -130,6 +157,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                     </label>
                 </div>
 
+                {/* 14. SUBMIT BUTTON */}
                 <button
                     type="submit"
                     className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm cursor-pointer"

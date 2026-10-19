@@ -3,7 +3,10 @@ import "./App.css";
 import { ProjectCards, type ProjectItem } from "./components/ProjectCard";
 import { AddProjectForm } from "./components/AddProjectForm";
 import { NoticeBanner, type BannerNotification } from "./components/NoticeBanner";
+import { CatalogExplorer } from "./components/ExternalProducts";
 
+// 1. DATA SEED / DEFAULT DATA (Typed Constant Array)
+// Menggunakan array bertipe `ProjectItem[]` sebagai data awal aplikasi.
 const initialProjects: ProjectItem[] = [
   {
     id: "proj-1",
@@ -32,8 +35,9 @@ const initialProjects: ProjectItem[] = [
 ];
 
 function App() {
-  // 1. KELOMPOK STATE (Selalu taruh di paling atas)
-  // State untuk menyimpan daftar proyek dinamis
+  // 2. KELOMPOK STATE & LAZY INITIAL STATE PATTERN (useState Hook)
+  // - State `projectList`: Menggunakan fungsi inisialisasi lazy `() => { ... }` agar pembacaan
+  //   localStorage hanya dijalankan 1 kali saat komponen di-mount, bukan di setiap re-render.
   const [projectList, setProjectList] = useState<ProjectItem[]>(() => {
     const savedData = localStorage.getItem("portfolio_projects_data");
     if (savedData) {
@@ -44,49 +48,54 @@ function App() {
         return initialProjects;
       }
     }
-    return initialProjects; // kembalikan default jika tidak ada data
+    return initialProjects; // Kembalikan nilai default jika localStorage kosong
   });
-  // state untuk notifikasi
+
+  // - State `notice`: Nullable State dengan tipe Discriminated Union `BannerNotification | null`
+  //   untuk menampilkan banner notifikasi dinamis saat ada aksi tambah/hapus.
   const [notice, setNotice] = useState<BannerNotification | null>(null);
 
-  // 2. KELOMPOK PERHITUNGAN NILAI (Derived State)
-  // Perhitungan statistik dinamis dari state
+  // 3. KELOMPOK PERHITUNGAN NILAI (Derived State / Computed Values)
+  // Menghitung statistik langsung dari state `projectList` tanpa membuat state tambahan
+  // guna menghindari inkonsistensi data.
   const completedCount = projectList.filter((p) => p.status === "completed").length;
   const plannedCount = projectList.filter((p) => p.status === "planned").length;
 
-  // 3. KELOMPOK HANDLER / FUNGSI
-  // Handler penambah proyek secara immutable
+  // 4. KELOMPOK HANDLER / FUNGSI AKSI (Immutable State Update)
+  // - Handler penambah proyek secara immutable dengan spread operator `[newProject, ...prevProjects]`
   const handleAddProject = (newProject: ProjectItem) => {
     setProjectList((prevProjects) => [newProject, ...prevProjects]);
-    // pasang banner sukses ditambahkan
+    // Memasang banner notifikasi sukses
     setNotice({
       type: "success",
       message: `Projek ${newProject?.title} berhasil ditambahkan!`,
     });
   };
-  // handler untuk hapus proyek
+
+  // - Handler hapus proyek secara immutable menggunakan `Array.prototype.filter`
   const handleDeleteProject = (id: string) => {
     const deletedItem = projectList.find((p) => p.id === id);
     setProjectList((prev) => prev.filter((item) => item.id !== id));
 
-    // pasang banner sukses
+    // Memasang banner notifikasi sukses
     setNotice({
       type: "success",
       message: `Projek ${deletedItem?.title ?? id} berhasil dihapus!`,
     });
   };
 
-  // 4. KELOMPOK EFFECT (Sinkronisasi Side-Effects)
-  // useEffect untuk otomatis menyimpan data ke localStorage
+  // 5. KELOMPOK EFFECT (Sinkronisasi Side-Effects dengan Dependency Array)
+  // - Menyimpan perubahan `projectList` secara otomatis ke Web Storage API (localStorage)
   useEffect(() => {
     localStorage.setItem("portfolio_projects_data", JSON.stringify(projectList));
-  }, [projectList]); // Wajib masukkan projectList ke dalam dependency array!
+  }, [projectList]); // Dependency array: hanya jalan ketika `projectList` berubah
 
+  // - Memperbarui judul tab browser (document.title)
   useEffect(() => {
     document.title = `Daftar project ${projectList.length} - Portofolio`;
-  }, [projectList]); // Wajib masukkan projectList ke dalam dependency array!
+  }, [projectList]); // Dependency array: sinkron dengan jumlah `projectList`
 
-  // 5. RENDER RETURN JSX
+  // 6. RENDER RETURN JSX (Komposisi Komponen & Callback Passing)
   return (
     <main className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200 px-6 py-12 md:py-16">
       {/* Ambient glow background */}
@@ -123,17 +132,22 @@ function App() {
           </div>
         </header>
 
-        {/* Tampilkan banner notifikasi jika ada */}
+        {/* 7. KOMPONEN NOTIFIKASI DENGAN CONDITIONAL & CALLBACK PROPS */}
         <NoticeBanner notice={notice} onClose={() => setNotice(null)} />
 
-        {/* Form Tambah Projek (Controlled Component) */}
+        {/* 8. FORM CONTROLLED DENGAN LIFTING STATE UP CALLBACK */}
         <AddProjectForm onAddProject={handleAddProject} />
 
-        {/* Grid List Komponen */}
+        {/* 9. LIST RENDERING DENGAN UNIQUE KEY PROP & EVENT CALLBACK */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projectList.map((item) => (
             <ProjectCards key={item.id} project={item} onDelete={handleDeleteProject} />
           ))}
+        </div>
+
+        <div className="mt-6">
+          <h2 className="text-xl font-bold text-slate-100">Produk</h2>
+          <CatalogExplorer />
         </div>
 
         {/* Footer */}

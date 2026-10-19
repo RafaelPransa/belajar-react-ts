@@ -1,6 +1,11 @@
 import { TechBadge } from "./TechBadge";
 
-// 1. DEFINISI TIPE DATA PROYEK
+// 1. DATA MODELING / DOMAIN ENTITY TYPE (TypeScript Interface)
+// Mendefinisikan blueprint struktur data proyek dalam aplikasi:
+// - `id`, `title`, `description`: Tipe primitif string.
+// - `techStack`: Array of string (`string[]`) untuk menampung daftar teknologi.
+// - `isFeatured`: Boolean flag penanda proyek unggulan.
+// - `status`: String Literal Union Type ("completed" | "planned") untuk membatasi status hanya pada 2 opsi valid.
 export interface ProjectItem {
     id: string;
     title: string;
@@ -10,14 +15,20 @@ export interface ProjectItem {
     status: "completed" | "planned";
 }
 
-// 2. KONTRAK PROPS UNTUK KARTU
+// 2. KONTRAK PROPS KOMPONEN (TypeScript Interface)
+// Mendefinisikan data dan fungsi callback yang dibutuhkan oleh kartu proyek:
+// - `project`: Objek data bertipe `ProjectItem` (Data passing dari parent).
+// - `onDelete`: Optional Callback Function (`(id: string) => void`) untuk meneruskan aksi hapus ke parent.
 interface ProjectCardProps {
     project: ProjectItem;
     onDelete?: (id: string) => void;
 }
 
-// 3. MENERIMA PROP `project` dan `onDelete`
+// 3. KOMPONEN FUNGSIONAL & PROPS DESTRUCTURING
+// Menerima prop `project` dan `onDelete` dengan tipe `ProjectCardProps`.
 export function ProjectCards({ project, onDelete }: ProjectCardProps) {
+    // 4. DERIVED STATE / COMPUTED BOOLEAN
+    // Menghitung status boolean secara langsung dari properti data tanpa perlu membuat state baru.
     const isCompleted = project.status === "completed";
 
     return (
@@ -31,6 +42,8 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
                     <h2 className="font-bold text-lg text-slate-100 group-hover:text-indigo-300 transition-colors duration-200 leading-snug">
                         {project.title}
                     </h2>
+                    {/* 5. CONDITIONAL RENDERING (Short-Circuit Evaluation `&&`) */}
+                    {/* Badge bintang hanya tampil jika `project.isFeatured` bernilai true */}
                     {project.isFeatured && (
                         <span className="inline-flex items-center gap-1 shrink-0 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 shadow-xs">
                             <span className="text-[10px]">⭐</span> Featured
@@ -45,7 +58,8 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
             </div>
 
             <div>
-                {/* 4. MENGIRIM DATA KE KOMPONEN ANAK (TechBadge) */}
+                {/* 6. LIST RENDERING & PROPS PASSING (Komposisi Komponen Anak) */}
+                {/* Menampilkan array string `techStack` menjadi komponen `TechBadge` */}
                 <div className="flex flex-wrap gap-1.5 mb-6">
                     {project.techStack.map((tech) => {
                         const isHighLight =
@@ -54,17 +68,19 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
                             tech.toLowerCase().includes("tailwind css");
 
                         return (
+                            // Penggunaan prop `key` unik untuk rekonsiliasi DOM React
                             <TechBadge key={tech} label={tech} isHighLighted={isHighLight} />
                         );
                     })}
                 </div>
 
-                {/* Footer card: ID & Status */}
+                {/* Footer card: ID, Status Badge & Tombol Aksi */}
                 <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
                     <span className="font-mono text-slate-500 bg-slate-950/60 px-2 py-0.5 rounded-md border border-slate-800/70">
                         ID: {project.id}
                     </span>
 
+                    {/* Dynamic Styling berdasarkan kondisi status `isCompleted` */}
                     <span
                         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-medium border ${isCompleted
                             ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
@@ -78,7 +94,13 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
                         {isCompleted ? "Selesai" : "Direncanakan"}
                     </span>
 
-                    <button type="button" className="bg-rose-400 px-2 py-1 rounded-sm text-white hover:bg-rose-500 cursor-pointer" onClick={() => onDelete?.(project.id)}>
+                    {/* 7. EVENT HANDLING & OPTIONAL CHAINING INVOCATION */}
+                    {/* Memanggil callback `onDelete` secara aman menggunakan `?.` bila fungsinya dikirim parent */}
+                    <button
+                        type="button"
+                        className="bg-rose-400 px-2 py-1 rounded-sm text-white hover:bg-rose-500 cursor-pointer"
+                        onClick={() => onDelete?.(project.id)}
+                    >
                         Delete
                     </button>
                 </div>
