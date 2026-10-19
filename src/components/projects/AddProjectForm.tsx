@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import type { ProjectItem } from "./ProjectCard";
-import { Button } from "./ui/Button";
+import type { ProjectItem } from "../../types/project";
+import { Button } from "../ui/Button";
 
 // 1. KONTRAK PROPS DENGAN CALLBACK FUNCTION (TypeScript Interface)
 // Komponen form menerima callback function `onAddProject` yang bertugas
