@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import type { ProjectItem } from "./ProjectCard";
+import { Button } from "./ui/Button";
 
 // 1. KONTRAK PROPS DENGAN CALLBACK FUNCTION (TypeScript Interface)
 // Komponen form menerima callback function `onAddProject` yang bertugas
@@ -158,12 +159,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
                 </div>
 
                 {/* 14. SUBMIT BUTTON */}
-                <button
-                    type="submit"
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm cursor-pointer"
-                >
-                    + Simpan Projek
-                </button>
+                <Button type="submit" variant="primary" size="sm">+ Simpan Projek</Button>
             </div>
         </form>
     );

@@ -1,4 +1,5 @@
 import { TechBadge } from "./TechBadge";
+import { Button } from "./ui/Button"
 
 // 1. DATA MODELING / DOMAIN ENTITY TYPE (TypeScript Interface)
 // Mendefinisikan blueprint struktur data proyek dalam aplikasi:
@@ -96,13 +97,9 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
 
                     {/* 7. EVENT HANDLING & OPTIONAL CHAINING INVOCATION */}
                     {/* Memanggil callback `onDelete` secara aman menggunakan `?.` bila fungsinya dikirim parent */}
-                    <button
-                        type="button"
-                        className="bg-rose-400 px-2 py-1 rounded-sm text-white hover:bg-rose-500 cursor-pointer"
-                        onClick={() => onDelete?.(project.id)}
-                    >
+                    <Button type="button" variant="ghost" size="sm" onClick={() => onDelete?.(project.id)}>
                         Delete
-                    </button>
+                    </Button>
                 </div>
             </div>
         </article>

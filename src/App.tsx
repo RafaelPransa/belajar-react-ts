@@ -4,6 +4,7 @@ import { ProjectCards, type ProjectItem } from "./components/ProjectCard";
 import { AddProjectForm } from "./components/AddProjectForm";
 import { NoticeBanner, type BannerNotification } from "./components/NoticeBanner";
 import { CatalogExplorer } from "./components/ExternalProducts";
+import { Button } from "./components/ui/Button"
 
 // 1. DATA SEED / DEFAULT DATA (Typed Constant Array)
 // Menggunakan array bertipe `ProjectItem[]` sebagai data awal aplikasi.
@@ -55,11 +56,23 @@ function App() {
   //   untuk menampilkan banner notifikasi dinamis saat ada aksi tambah/hapus.
   const [notice, setNotice] = useState<BannerNotification | null>(null);
 
+  // - State `activeTab`: Union Literal Type ("all" | "completed" | "planned")
+  //   untuk mengontrol status tab filter kategori proyek yang sedang aktif dipilih pengguna.
+  const [activeTab, setActiveTab] = useState<"all" | "completed" | "planned">("all");
+
   // 3. KELOMPOK PERHITUNGAN NILAI (Derived State / Computed Values)
   // Menghitung statistik langsung dari state `projectList` tanpa membuat state tambahan
   // guna menghindari inkonsistensi data.
   const completedCount = projectList.filter((p) => p.status === "completed").length;
   const plannedCount = projectList.filter((p) => p.status === "planned").length;
+
+  // - In-Memory Filtering (Derived State):
+  //   Menyaring daftar proyek secara reaktif setiap kali `projectList` atau `activeTab` berubah
+  //   tanpa perlu menduplikasi data ke dalam state baru.
+  const filteredProjects = projectList.filter((item) => {
+    if (activeTab === "all") return true;
+    return item.status === activeTab;
+  });
 
   // 4. KELOMPOK HANDLER / FUNGSI AKSI (Immutable State Update)
   // - Handler penambah proyek secara immutable dengan spread operator `[newProject, ...prevProjects]`
@@ -138,15 +151,52 @@ function App() {
         {/* 8. FORM CONTROLLED DENGAN LIFTING STATE UP CALLBACK */}
         <AddProjectForm onAddProject={handleAddProject} />
 
-        {/* 9. LIST RENDERING DENGAN UNIQUE KEY PROP & EVENT CALLBACK */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projectList.map((item) => (
-            <ProjectCards key={item.id} project={item} onDelete={handleDeleteProject} />
-          ))}
+        {/* 9. TEKNIK: TABS FILTER UI DENGAN REUSABLE BUTTON COMPONENT */}
+        {/* Menggunakan prop `variant` dinamis (primary vs secondary) berdasarkan state `activeTab` */}
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <Button
+            variant={activeTab === "all" ? "primary" : "secondary"}
+            size="sm"
+            onClick={() => setActiveTab("all")}
+          >
+            Semua ({projectList.length})
+          </Button>
+          <Button
+            variant={activeTab === "completed" ? "primary" : "secondary"}
+            size="sm"
+            onClick={() => setActiveTab("completed")}
+          >
+            Selesai ({completedCount})
+          </Button>
+          <Button
+            variant={activeTab === "planned" ? "primary" : "secondary"}
+            size="sm"
+            onClick={() => setActiveTab("planned")}
+          >
+            Direncanakan ({plannedCount})
+          </Button>
         </div>
 
+        {/* 10. TEKNIK: LIST RENDERING DENGAN EMPTY STATE PATTERN */}
+        {/* Menggunakan ternary operator: jika array kosong tampilkan fallback UI, jika ada render kartu */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredProjects.length === 0 ? (
+            // Fallback UI saat hasil filter tidak menemukan item apa pun
+            <div className="col-span-full py-12 text-center border border-dashed border-slate-800 rounded-2xl">
+              <p className="text-slate-400 text-sm">
+                Tidak ada projek dengan status "{activeTab === "all" ? "Semua" : activeTab === "completed" ? "Selesai" : "Direncanakan"}".
+              </p>
+            </div>
+          ) : (
+            // Render daftar kartu proyek dengan key unik
+            filteredProjects.map((item) => (
+              <ProjectCards key={item.id} project={item} onDelete={handleDeleteProject} />
+            ))
+          )}
+        </div>
+
+        {/* 11. TEKNIK: INTEGRASI ASYNC DATA FETCHER (REST API COMPONENT) */}
         <div className="mt-6">
-          <h2 className="text-xl font-bold text-slate-100">Produk</h2>
           <CatalogExplorer />
         </div>
 

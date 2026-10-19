@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getProducts, type Product, getMessageError } from "../services/productService";
+import { Button } from "./ui/Button"
 
 // ============================================================================
 // 1. TEKNIK: GENERIC DISCRIMINATED UNION (ASYNC UI STATE PATTERN)
@@ -63,14 +64,13 @@ export function CatalogExplorer() {
                 </div>
 
                 {/* Tombol refresh dengan state disable dan animasi putar saat loading */}
-                <button
-                    type="button"
+                <Button
                     onClick={() => fetchData()}
                     disabled={state.status === "loading"}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 hover:text-white hover:border-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                     <span className={state.status === "loading" ? "animate-spin" : ""}>🔄</span> Refresh Data
-                </button>
+                </Button>
             </div>
 
             {/* ======================================================================== */}
