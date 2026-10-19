@@ -13,10 +13,11 @@ export interface ProjectItem {
 // 2. KONTRAK PROPS UNTUK KARTU
 interface ProjectCardProps {
     project: ProjectItem;
+    onDelete?: (id: string) => void;
 }
 
-// 3. MENERIMA PROP `project`
-export function ProjectCards({ project }: ProjectCardProps) {
+// 3. MENERIMA PROP `project` dan `onDelete`
+export function ProjectCards({ project, onDelete }: ProjectCardProps) {
     const isCompleted = project.status === "completed";
 
     return (
@@ -76,6 +77,10 @@ export function ProjectCards({ project }: ProjectCardProps) {
                         />
                         {isCompleted ? "Selesai" : "Direncanakan"}
                     </span>
+
+                    <button type="button" className="bg-rose-400 px-2 py-1 rounded-sm text-white hover:bg-rose-500 cursor-pointer" onClick={() => onDelete?.(project.id)}>
+                        Delete
+                    </button>
                 </div>
             </div>
         </article>

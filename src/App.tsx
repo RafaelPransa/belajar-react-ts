@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import { ProjectCards, type ProjectItem } from "./components/ProjectCard";
 import { AddProjectForm } from "./components/AddProjectForm";
+import { NoticeBanner, type BannerNotification } from "./components/NoticeBanner";
 
 const initialProjects: ProjectItem[] = [
   {
@@ -31,6 +32,7 @@ const initialProjects: ProjectItem[] = [
 ];
 
 function App() {
+  // 1. KELOMPOK STATE (Selalu taruh di paling atas)
   // State untuk menyimpan daftar proyek dinamis
   const [projectList, setProjectList] = useState<ProjectItem[]>(() => {
     const savedData = localStorage.getItem("portfolio_projects_data");
@@ -44,16 +46,37 @@ function App() {
     }
     return initialProjects; // kembalikan default jika tidak ada data
   });
+  // state untuk notifikasi
+  const [notice, setNotice] = useState<BannerNotification | null>(null);
 
+  // 2. KELOMPOK PERHITUNGAN NILAI (Derived State)
   // Perhitungan statistik dinamis dari state
   const completedCount = projectList.filter((p) => p.status === "completed").length;
   const plannedCount = projectList.filter((p) => p.status === "planned").length;
 
+  // 3. KELOMPOK HANDLER / FUNGSI
   // Handler penambah proyek secara immutable
   const handleAddProject = (newProject: ProjectItem) => {
     setProjectList((prevProjects) => [newProject, ...prevProjects]);
+    // pasang banner sukses ditambahkan
+    setNotice({
+      type: "success",
+      message: `Projek ${newProject?.title} berhasil ditambahkan!`,
+    });
+  };
+  // handler untuk hapus proyek
+  const handleDeleteProject = (id: string) => {
+    const deletedItem = projectList.find((p) => p.id === id);
+    setProjectList((prev) => prev.filter((item) => item.id !== id));
+
+    // pasang banner sukses
+    setNotice({
+      type: "success",
+      message: `Projek ${deletedItem?.title ?? id} berhasil dihapus!`,
+    });
   };
 
+  // 4. KELOMPOK EFFECT (Sinkronisasi Side-Effects)
   // useEffect untuk otomatis menyimpan data ke localStorage
   useEffect(() => {
     localStorage.setItem("portfolio_projects_data", JSON.stringify(projectList));
@@ -63,6 +86,7 @@ function App() {
     document.title = `Daftar project ${projectList.length} - Portofolio`;
   }, [projectList]); // Wajib masukkan projectList ke dalam dependency array!
 
+  // 5. RENDER RETURN JSX
   return (
     <main className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200 px-6 py-12 md:py-16">
       {/* Ambient glow background */}
@@ -99,13 +123,16 @@ function App() {
           </div>
         </header>
 
+        {/* Tampilkan banner notifikasi jika ada */}
+        <NoticeBanner notice={notice} onClose={() => setNotice(null)} />
+
         {/* Form Tambah Projek (Controlled Component) */}
         <AddProjectForm onAddProject={handleAddProject} />
 
         {/* Grid List Komponen */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projectList.map((item) => (
-            <ProjectCards key={item.id} project={item} />
+            <ProjectCards key={item.id} project={item} onDelete={handleDeleteProject} />
           ))}
         </div>
 
