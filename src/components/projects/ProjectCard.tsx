@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { TechBadge } from "../ui/TechBadge";
 import { Button } from "../ui/Button";
 import type { ProjectItem } from "../../types";
@@ -26,9 +27,13 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
             <div>
                 {/* Header card: Judul & Featured Badge */}
                 <div className="flex items-start justify-between gap-3 mb-2.5">
-                    <h2 className="font-bold text-lg text-slate-100 group-hover:text-indigo-300 transition-colors duration-200 leading-snug">
-                        {project.title}
-                    </h2>
+                    {/* TEKNIK: DECLARATIVE CLIENT-SIDE NAVIGATION DENGAN DYNAMIC PARAMETER */}
+                    {/* Mengarahkan pengguna ke halaman detail "/project/:id" tanpa reload */}
+                    <Link to={`/project/${project.id}`}>
+                        <h2 className="font-bold text-lg text-slate-100 group-hover:text-indigo-300 transition-colors duration-200 leading-snug">
+                            {project.title}
+                        </h2>
+                    </Link>
                     {/* 5. CONDITIONAL RENDERING (Short-Circuit Evaluation `&&`) */}
                     {/* Badge bintang hanya tampil jika `project.isFeatured` bernilai true */}
                     {project.isFeatured && (
@@ -83,9 +88,22 @@ export function ProjectCards({ project, onDelete }: ProjectCardProps) {
 
                     {/* 7. EVENT HANDLING & OPTIONAL CHAINING INVOCATION */}
                     {/* Memanggil callback `onDelete` secara aman menggunakan `?.` bila fungsinya dikirim parent */}
-                    <Button type="button" variant="ghost" size="sm" onClick={() => onDelete?.(project.id)}>
-                        Delete
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Link to={`/project/${project.id}`}>
+                            <Button variant="ghost" size="sm" className="text-indigo-400 hover:text-indigo-300">
+                                Detail →
+                            </Button>
+                        </Link>
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-rose-400 hover:text-rose-300"
+                            onClick={() => onDelete?.(project.id)}
+                        >
+                            Hapus
+                        </Button>
+                    </div>
                 </div>
             </div>
         </article>
