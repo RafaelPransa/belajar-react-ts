@@ -5,3 +5,4 @@
 // sehingga memudahkan proses impor di `App.tsx` melalui satu pintu `./pages`.
 export * from "./HomePage";
 export * from "./ProjectDetailPage";
+export * from "./ProductExplorerPages";

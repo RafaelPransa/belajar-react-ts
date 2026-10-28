@@ -5,7 +5,8 @@
 // App.tsx tidak lagi menampung state tampilan secara langsung, melainkan mengatur
 // pergantian komponen halaman (pages) berdasarkan URL di browser.
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { HomePage, ProjectDetailPage } from "./pages";
+import { HomePage, ProjectDetailPage, ProductExplorerPage } from "./pages";
+
 
 function App() {
   return (
@@ -24,6 +25,9 @@ function App() {
         {/* Tanda titik dua (`:id`) adalah placeholder variabel dinamis. */}
         {/* Rute ini menangkap URL seperti "/project/proj-1", "/project/proj-2", dll. */}
         <Route path="/project/:id" element={<ProjectDetailPage />} />
+
+        {/* Rute Mini Project */}
+        <Route path="/explorer" element={<ProductExplorerPage />} />
 
         {/* 5. TEKNIK: WILDCARD / CATCH-ALL ROUTE (404 NOT FOUND) */}
         {/* Tanda bintang (*) menangkap semua alamat URL yang tidak terdaftar di rute sebelumnya. */}

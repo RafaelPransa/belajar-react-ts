@@ -4,6 +4,7 @@
 // Komponen halaman utama yang merakit seluruh balok komponen (Form, Filter, List, API)
 // dan mengelola state data portofolio pada rute root "/".
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "../App.css";
 import { ProjectCards, AddProjectForm, NoticeBanner, CatalogExplorer, Button } from "../components";
 import type { ProjectItem, BannerNotification } from "../types";
@@ -197,6 +198,14 @@ export function HomePage() {
                             <ProjectCards key={item.id} project={item} onDelete={handleDeleteProject} />
                         ))
                     )}
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                    <Link to="/explorer">
+                        <Button variant="primary" size="sm">
+                            Buka Product Explorer 🚀
+                        </Button>
+                    </Link>
                 </div>
 
                 {/* 11. TEKNIK: INTEGRASI ASYNC DATA FETCHER (REST API COMPONENT) */}
