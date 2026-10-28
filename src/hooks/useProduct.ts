@@ -25,6 +25,9 @@ export function useProducts({
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [reloadTrigger, setReloadTrigger] = useState<number>(0);
 
+    // Ambil URL dasar dari .env dengan fallback URL default
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dummyjson.com";
+
     useEffect(() => {
         const controller = new AbortController();
 
@@ -32,16 +35,17 @@ export function useProducts({
             setIsLoading(true);
             setErrorMessage(null);
 
+
+
             try {
-                let url = "https://dummyjson.com/products?limit=12";
+                // Di dalam fungsi fetchProducts():
+                let url = `${BASE_URL}/products?limit=12`;
 
                 // Prioritas 1: Jika user sedang mengetik pencarian
                 if (searchQuery.trim().length > 0) {
-                    url = `https://dummyjson.com/products/search?q=${encodeURIComponent(searchQuery.trim())}`;
-                }
-                // Prioritas 2: Jika kategori spesifik dipilih
-                else if (selectedCategory && selectedCategory !== "all") {
-                    url = `https://dummyjson.com/products/category/${encodeURIComponent(selectedCategory)}`;
+                    url = `${BASE_URL}/products/search?q=${encodeURIComponent(searchQuery.trim())}`;
+                } else if (selectedCategory && selectedCategory !== "all") {
+                    url = `${BASE_URL}/products/category/${encodeURIComponent(selectedCategory)}`;
                 }
 
                 const response = await fetch(url, { signal: controller.signal });

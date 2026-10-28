@@ -104,7 +104,8 @@ function isProductResponse(data: unknown): data is ProductResponse {
     );
 }
 
-const URL_API = "https://dummyjson.com/products?limit=4&select=id,title,price,category,thumbnail,description";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dummyjson.com";
+const URL_API = `${BASE_URL}/products?limit=4&select=id,title,price,category,thumbnail,description`;
 
 // ============================================================================
 // 5. TEKNIK: SERVICE LAYER PATTERN DENGAN ABORT SIGNAL (CANCELLABLE FETCH)
